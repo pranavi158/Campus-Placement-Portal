@@ -1,0 +1,38 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<h2>Applicants for: {{ drive.title }}</h2>
+<a href="{{ url_for('company_dashboard') }}">Back to Dashboard</a>
+
+<hr>
+
+{% for app in applications %}
+    <div style="border: 1px solid #000; padding: 15px; margin-bottom: 20px;">
+        <p><strong>Student Name:</strong> {{ app.student.name }}</p>
+        <p><strong>Branch:</strong> {{ app.student.branch }}</p>
+        <p><strong>CGPA:</strong> {{ app.student.cgpa }}</p>
+        <p><strong>Applied On Date:</strong> {{ app.applied_date.strftime('%Y-%m-%d') }}</p>
+        <p><strong>Student Resume Link:</strong> 
+            {% if app.student.resume_url %}
+                <a href="{{ app.student.resume_url }}" target="_blank">View Resume</a>
+            {% else %}
+                None Provided
+            {% endif %}
+        </p>
+
+        <form method="POST" action="{{ url_for('update_application_status', app_id=app.id) }}">
+            Current Decision / Status:
+            <select name="status">
+                <option value="Applied" {% if app.status == 'Applied' %}selected{% endif %}>Just Applied</option>
+                <option value="Shortlisted" {% if app.status == 'Shortlisted' %}selected{% endif %}>Shortlist them</option>
+                <option value="Selected" {% if app.status == 'Selected' %}selected{% endif %}>Select them</option>
+                <option value="Rejected" {% if app.status == 'Rejected' %}selected{% endif %}>Reject</option>
+            </select>
+            <input type="submit" value="Save Decision">
+        </form>
+    </div>
+{% else %}
+    <p>No students have applied for this drive yet.</p>
+{% endfor %}
+
+{% endblock %}

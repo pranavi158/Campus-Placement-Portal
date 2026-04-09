@@ -1,0 +1,53 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<h3>Manage Placement Drives</h3>
+
+<table border="1" cellpadding="5" cellspacing="0" style="width: 100%;">
+    <tr style="background-color: #ddd;">
+        <th>Drive ID</th>
+        <th>Company Name</th>
+        <th>Job Title</th>
+        <th>Registration Deadline</th>
+        <th>Current Status</th>
+        <th>Actions to Take</th>
+    </tr>
+    {% for drive in drives %}
+    <tr>
+        <td>{{ drive.id }}</td>
+        <td>{{ drive.company.name }}</td>
+        <td>{{ drive.title }}</td>
+        <td>
+            {% if drive.deadline %}
+                {{ drive.deadline.strftime('%Y-%m-%d') }}
+            {% else %}
+                No deadline 
+            {% endif %}
+        </td>
+        <td>
+            {% if drive.status == 'approved' %}
+                <span style="color: green;">Approved</span>
+            {% elif drive.status == 'rejected' %}
+                <span style="color: red;">Rejected</span>
+            {% elif drive.status == 'closed' %}
+                <span style="color: gray;">Closed</span>
+            {% else %}
+                <span style="color: orange;">Pending...</span>
+            {% endif %}
+        </td>
+        <td>
+            {% if drive.status == 'pending' %}
+                <a href="{{ url_for('approve_drive', drive_id=drive.id) }}">Approve</a> | 
+                <a href="{{ url_for('reject_drive', drive_id=drive.id) }}">Reject</a>
+            {% else %}
+                No actions available
+            {% endif %}
+        </td>
+    </tr>
+    {% else %}
+    <tr>
+        <td colspan="6">No placement drives found.</td>
+    </tr>
+    {% endfor %}
+</table>
+{% endblock %}

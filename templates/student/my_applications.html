@@ -1,0 +1,34 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<h3>My Application History</h3>
+
+<table border="1" cellpadding="5" cellspacing="0" style="width: 100%;">
+    <tr style="background-color: #ddd;">
+        <th>Company</th>
+        <th>Job Title applied for</th>
+        <th>Date You Applied</th>
+        <th>Company's Deadline</th>
+        <th>Your Selection Status</th>
+    </tr>
+    {% for app in applications %}
+    <tr>
+        <td>{{ app.drive.company.name }}</td>
+        <td>{{ app.drive.title }}</td>
+        <td>{{ app.applied_date.strftime('%Y-%m-%d %H:%M') }}</td>
+        <td>
+            {% if app.drive.deadline %}
+                {{ app.drive.deadline.strftime('%Y-%m-%d') }}
+            {% else %}
+                N/A
+            {% endif %}
+        </td>
+        <td><strong>{{ app.status }}</strong></td>
+    </tr>
+    {% else %}
+    <tr>
+        <td colspan="5">You have not applied for any placement drives yet.</td>
+    </tr>
+    {% endfor %}
+</table>
+{% endblock %}

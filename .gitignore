@@ -1,8 +1,7 @@
-cat > .gitignore << EOF
 # Python
 __pycache__/
 *.py[cod]
-*\$py.class
+*$py.class
 *.so
 .Python
 env/
@@ -32,4 +31,3 @@ Thumbs.db
 # Logs
 logs/
 *.log
-EOF

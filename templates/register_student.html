@@ -1,0 +1,30 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<h3>Student Registration Form</h3>
+<form method="POST" style="border: 1px solid #ccc; padding: 20px; width: 350px;">
+    <p>
+        <label>Full Name:</label><br>
+        <input type="text" name="name" required>
+    </p>
+    <p>
+        <label>Email Address:</label><br>
+        <input type="email" name="email" required>
+    </p>
+    <p>
+        <label>Password:</label><br>
+        <input type="password" name="password" required>
+    </p>
+    <p>
+        <label>Branch / Department:</label><br>
+        <input type="text" name="branch" required>
+    </p>
+    <p>
+        <label>Current CGPA:</label><br>
+        <input type="number" step="0.01" name="cgpa" required>
+    </p>
+    <input type="submit" value="Register as Student">
+</form>
+<br>
+<p>Already registered? <a href="{{ url_for('login') }}">Go to Login</a></p>
+{% endblock %}

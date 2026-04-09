@@ -1,0 +1,26 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<h3>Login Page</h3>
+<form method="POST" style="border: 1px solid #ccc; padding: 20px; width: 300px;">
+    <p>
+        <label>Select Your Role:</label><br>
+        <select name="role" required>
+            <option value="student">Student</option>
+            <option value="company">Company</option>
+            <option value="admin">Admin</option>
+        </select>
+    </p>
+    <p>
+        <label>Username or Email:</label><br>
+        <input type="text" name="username_or_email" required>
+    </p>
+    <p>
+        <label>Password:</label><br>
+        <input type="password" name="password" required>
+    </p>
+    <input type="submit" value="Login">
+</form>
+<br>
+<p>If you don't have an account, please <a href="{{ url_for('register_student') }}">Register</a></p>
+{% endblock %}

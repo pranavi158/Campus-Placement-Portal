@@ -1,0 +1,30 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<h3>Complete Historical Applications</h3>
+
+<table border="1" cellpadding="5" cellspacing="0" style="width: 100%;">
+    <tr style="background-color: #ddd;">
+        <th>Application ID</th>
+        <th>Student Info</th>
+        <th>Company Applied To</th>
+        <th>Drive Job Title</th>
+        <th>Date Applied</th>
+        <th>Application Outcome</th>
+    </tr>
+    {% for app in applications %}
+    <tr>
+        <td>{{ app.id }}</td>
+        <td>{{ app.student.name }} <br><small>({{ app.student.email }})</small></td>
+        <td>{{ app.drive.company.name }}</td>
+        <td>{{ app.drive.title }}</td>
+        <td>{{ app.applied_date.strftime('%Y-%m-%d %H:%M') }}</td>
+        <td><strong>{{ app.status }}</strong></td>
+    </tr>
+    {% else %}
+    <tr>
+        <td colspan="6">Nobody has applied for anything yet.</td>
+    </tr>
+    {% endfor %}
+</table>
+{% endblock %}

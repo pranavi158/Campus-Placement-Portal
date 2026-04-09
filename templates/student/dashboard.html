@@ -1,0 +1,36 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<h3>Available Placement Drives</h3>
+
+<div style="display: flex; flex-wrap: wrap;">
+    {% for drive in drives %}
+    <div style="border: 1px solid #000; padding: 15px; margin: 10px; width: 300px;">
+        <h4 style="margin: 0;">{{ drive.title }}</h4>
+        <p style="margin: 5px 0;"><strong>Company:</strong> {{ drive.company.name }}</p>
+        
+        <p><strong>Apply Before:</strong> 
+            {% if drive.deadline %}
+                {{ drive.deadline.strftime('%Y-%m-%d') }}
+            {% else %}
+                N/A
+            {% endif %}
+        </p>
+        
+        <p><strong>Job Details:</strong><br>{{ drive.job_description }}</p>
+        <p><strong>Required Eligibility:</strong><br>{{ drive.eligibility_criteria }}</p>
+        <hr>
+        
+        {% if drive.id in applied_drive_ids %}
+            <p style="color: green; font-weight: bold;">You Have Already Applied!</p>
+        {% else %}
+            <form method="POST" action="{{ url_for('apply_drive', drive_id=drive.id) }}">
+                <input type="submit" value="Submit Application">
+            </form>
+        {% endif %}
+    </div>
+    {% else %}
+    <p>There are no placement drives available at the moment.</p>
+    {% endfor %}
+</div>
+{% endblock %}
