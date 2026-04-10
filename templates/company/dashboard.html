@@ -1,13 +1,13 @@
 {% extends 'base.html' %}
 
 {% block content %}
-<h3>Company Dashboard: {{ company.name }}</h3>
+<h3>Dashboard: {{ company.name }}</h3>
 
-<p><a href="{{ url_for('create_drive') }}" style="border: 1px solid #000; padding: 5px; text-decoration: none; background-color: #eee;">+ Create New Placement Drive</a></p>
+<p><a href="/company/drive/create" style="border: 1px solid #000; padding: 5px; text-decoration: none; background-color: #eee;">+ Create New Placement Drive</a></p>
 
-{% if not company.is_approved %}
+{% if not company.appr %}
 <p style="color: red; border: 1px solid red; padding: 10px;">
-    <i>Warning: Your company profile is pending admin approval. You can draft drives, but students cannot see them.</i>
+    <i>Warning: Your profile is pending admin approval</i>
 </p>
 {% endif %}
 
@@ -33,19 +33,19 @@
             {% endif %}
         </td>
         <td><strong>{{ drive.status.upper() }}</strong></td>
-        <td>{{ drive.applications|length }}</td>
+        <td>{{ drive.application|length }}</td>
         <td>
-            <a href="{{ url_for('view_applications', drive_id=drive.id) }}">View Applicants</a> | 
-            <a href="{{ url_for('edit_drive', drive_id=drive.id) }}">Edit Drive</a> | 
+            <a href="/company/drive/{{ drive.id }}/applications">View Applicants</a> | 
+            <a href="/company/drive/edit/{{ drive.id }}">Edit Drive</a> | 
             {% if drive.status != 'closed' %}
-                <a href="{{ url_for('close_drive', drive_id=drive.id) }}">Close</a> | 
+                <a href="/company/drive/close/{{ drive.id }}">Close</a> | 
             {% endif %}
-            <a href="{{ url_for('delete_drive', drive_id=drive.id) }}" style="color: red;">Delete</a>
+            <a href="/company/drive/delete/{{ drive.id }}" style="color: red;">Delete</a>
         </td>
     </tr>
     {% else %}
     <tr>
-        <td colspan="6">You have not created any placement drives.</td>
+        <td colspan="6">No placement drives</td>
     </tr>
     {% endfor %}
 </table>

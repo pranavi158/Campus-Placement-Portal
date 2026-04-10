@@ -1,7 +1,7 @@
 {% extends 'base.html' %}
 
 {% block content %}
-<h3>Update Company Profile</h3>
+<h3>Update Profile</h3>
 
 <form method="POST" style="border: 1px solid #ccc; padding: 20px; width: 400px;">
     <p>
@@ -9,24 +9,24 @@
         <input type="text" name="name" value="{{ company.name }}" required>
     </p>
     <p>
-        <label>Email Address (Cannot change):</label><br>
+        <label>Email:</label><br>
         <input type="email" value="{{ company.email }}" disabled>
     </p>
     <p>
         <label>Industry:</label><br>
-        <input type="text" name="industry" value="{{ company.industry }}" required>
+        <input type="text" name="idy" value="{{ company.industry }}" required>
     </p>
     <p>
-        <label>HR Contact Info:</label><br>
-        <input type="text" name="hr_contact" value="{{ company.hr_contact }}" required>
+        <label>HR Contact:</label><br>
+        <input type="text" name="hr" value="{{ company.hr_contact }}" required>
     </p>
     <p>
-        <label>Website Link:</label><br>
-        <input type="url" name="website" value="{{ company.website or '' }}">
+        <label>Website:</label><br>
+        <input type="url" name="site" value="{{ company.website or '' }}">
     </p>
     <input type="submit" value="Update">
 </form>
 
 <br>
-<a href="{{ url_for('company_dashboard') }}">Cancel and go back</a>
+<a href="/company">Go back</a>
 {% endblock %}

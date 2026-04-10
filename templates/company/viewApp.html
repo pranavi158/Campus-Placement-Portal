@@ -2,7 +2,7 @@
 
 {% block content %}
 <h2>Applicants for: {{ drive.title }}</h2>
-<a href="{{ url_for('company_dashboard') }}">Back to Dashboard</a>
+<a href="/company">Back to Dashboard</a>
 
 <hr>
 
@@ -11,16 +11,16 @@
         <p><strong>Student Name:</strong> {{ app.student.name }}</p>
         <p><strong>Branch:</strong> {{ app.student.branch }}</p>
         <p><strong>CGPA:</strong> {{ app.student.cgpa }}</p>
-        <p><strong>Applied On Date:</strong> {{ app.applied_date.strftime('%Y-%m-%d') }}</p>
-        <p><strong>Student Resume Link:</strong> 
-            {% if app.student.resume_url %}
-                <a href="{{ app.student.resume_url }}" target="_blank">View Resume</a>
+        <p><strong>Applied On:</strong> {{ app.appDate.strftime('%Y-%m-%d') }}</p>
+        <p><strong>Resume:</strong> 
+            {% if app.student.resume %}
+                <a href="{{ app.student.resume }}" target="_blank">View Resume</a>
             {% else %}
                 None Provided
             {% endif %}
         </p>
 
-        <form method="POST" action="{{ url_for('update_application_status', app_id=app.id) }}">
+        <form method="POST" action="/company/application/{{ app.id }}/status">
             Current Decision / Status:
             <select name="status">
                 <option value="Applied" {% if app.status == 'Applied' %}selected{% endif %}>Just Applied</option>
@@ -32,7 +32,7 @@
         </form>
     </div>
 {% else %}
-    <p>No students have applied for this drive yet.</p>
+    <p>No Applications</p>
 {% endfor %}
 
 {% endblock %}

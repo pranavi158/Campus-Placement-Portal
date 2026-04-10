@@ -17,20 +17,20 @@
             {% endif %}
         </p>
         
-        <p><strong>Job Details:</strong><br>{{ drive.job_description }}</p>
-        <p><strong>Required Eligibility:</strong><br>{{ drive.eligibility_criteria }}</p>
+        <p><strong>Job Details:</strong><br>{{ drive.jd }}</p>
+        <p><strong>Required Eligibility:</strong><br>{{ drive.eligibility }}</p>
         <hr>
         
-        {% if drive.id in applied_drive_ids %}
+        {% if drive.id in appliedDriveID %}
             <p style="color: green; font-weight: bold;">You Have Already Applied!</p>
         {% else %}
-            <form method="POST" action="{{ url_for('apply_drive', drive_id=drive.id) }}">
+            <form method="POST" action="/student/apply/{{ drive.id }}">
                 <input type="submit" value="Submit Application">
             </form>
         {% endif %}
     </div>
     {% else %}
-    <p>There are no placement drives available at the moment.</p>
+    <p>No placement drives at the moment</p>
     {% endfor %}
 </div>
 {% endblock %}

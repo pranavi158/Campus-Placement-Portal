@@ -1,9 +1,9 @@
 {% extends 'base.html' %}
 
 {% block content %}
-<h3>Manage Registered Students</h3>
+<h3>Registered Students</h3>
 
-<form method="GET" action="{{ url_for('admin_students') }}" style="margin-bottom: 20px;">
+<form method="GET" action="/admin/students" style="margin-bottom: 20px;">
     Search (by Name, ID, or Email): 
     <input type="text" name="search" value="{{ request.args.get('search', '') }}">
     <input type="submit" value="Search">
@@ -13,11 +13,11 @@
     <tr style="background-color: #ddd;">
         <th>Student ID</th>
         <th>Student Name</th>
-        <th>Email ID</th>
+        <th>Email</th>
         <th>Branch</th>
         <th>CGPA</th>
-        <th>Blacklist Status</th>
-        <th>Actions to Take</th>
+        <th>Status</th>
+        <th>Actions</th>
     </tr>
     {% for student in students %}
     <tr>
@@ -27,25 +27,25 @@
         <td>{{ student.branch }}</td>
         <td>{{ student.cgpa }}</td>
         <td>
-            {% if student.is_blacklisted %}
+            {% if student.blacklisted %}
                 <span style="color: red;">Blacklisted</span>
             {% else %}
                 <span style="color: green;">Active</span>
             {% endif %}
         </td>
         <td>
-            <a href="{{ url_for('blacklist_student', student_id=student.id) }}">
-                {% if student.is_blacklisted %}
-                    Un-blacklist Account
+            <a href="/admin/students/blacklist/{{ student.id }}">
+                {% if student.blacklisted %}
+                    Remove Blacklist
                 {% else %}
-                    Blacklist Account
+                    Blacklist
                 {% endif %}
             </a>
         </td>
     </tr>
     {% else %}
     <tr>
-        <td colspan="7">No students exist yet.</td>
+        <td colspan="7">No students</td>
     </tr>
     {% endfor %}
 </table>

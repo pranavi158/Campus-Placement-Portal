@@ -1,4 +1,4 @@
-from flask import Flask, render_template, request, redirect, url_for, session, flash
+from flask import Flask, render_template, request, redirect, session, flash
 from werkzeug.security import generate_password_hash, check_password_hash
 from model import db, init_db, Admin, Student, Company, PlacementDrive, Application
 from datetime import datetime
@@ -16,41 +16,41 @@ init_db(app)
 def home():
     if 'role' in session:
         if session['role'] == 'admin':
-            return redirect(url_for('admin_dashboard'))
+            return redirect('/admin')
         elif session['role'] == 'company':
-            return redirect(url_for('company_dashboard'))
+            return redirect('/company')
         elif session['role'] == 'student':
-            return redirect(url_for('student_dashboard'))
-    return redirect(url_for('login'))
+            return redirect('/student')
+    return redirect('/login')
 
 
 @app.route('/login', methods=['GET', 'POST'])
 def login():
     if request.method == 'POST':
         role = request.form.get('role')
-        username_or_email = request.form.get('username_or_email')
-        password = request.form.get('password')
+        email = request.form.get('email')
+        pas = request.form.get('pas')
 
         user = None
         if role == 'admin':
-            user = Admin.query.filter_by(username=username_or_email).first()
+            user = Admin.query.filter_by(username=email).first()
         elif role == 'company':
-            user = Company.query.filter_by(email=username_or_email).first()
+            user = Company.query.filter_by(email=email).first()
         elif role == 'student':
-            user = Student.query.filter_by(email=username_or_email).first()
+            user = Student.query.filter_by(email=email).first()
         else:
-            flash('Invalid role selected.', 'danger')
-            return redirect(url_for('login'))
+            flash('Invalid role', 'danger')
+            return redirect('/login')
 
         if user:
-            if check_password_hash(user.password_hash, password):
-                if role in ['company', 'student'] and user.is_blacklisted:
-                    flash('Your account has been blacklisted.', 'danger')
-                    return redirect(url_for('login'))
+            if check_password_hash(user.pas, pas):
+                if role in ['company', 'student'] and user.blacklisted:
+                    flash('Your account is blacklisted', 'danger')
+                    return redirect('/login')
 
-                if role == 'company' and not user.is_approved:
-                    flash('Your company account is pending admin approval.', 'warning')
-                    return redirect(url_for('login'))
+                if role == 'company' and not user.appr:
+                    flash('Pending Approval', 'warning')
+                    return redirect('/login')
 
                 session['user_id'] = user.id
                 session['role'] = role
@@ -60,85 +60,83 @@ def login():
                     session['name'] = user.name
                 
                 flash('Login successful!', 'success')
-                return redirect(url_for('home'))
+                return redirect('/')
             else:
-                flash('Invalid credentials.', 'danger')
+                flash('Invalid', 'danger')
         else:
-            flash('User not found.', 'danger')
+            flash('User not found', 'danger')
             
     return render_template('login.html')
 
 
 @app.route('/register/student', methods=['GET', 'POST'])
-def register_student():
+def studentReg():
     if request.method == 'POST':
         name = request.form.get('name')
         email = request.form.get('email')
-        password = request.form.get('password')
+        pas = request.form.get('pas')
         branch = request.form.get('branch')
         cgpa = request.form.get('cgpa')
 
         existing_student = Student.query.filter_by(email=email).first()
         if existing_student:
-            flash('Email already registered!', 'danger')
-            return redirect(url_for('register_student'))
+            flash('Already registered!', 'danger')
+            return redirect('/register/student')
         
-        hashed_password = generate_password_hash(password)
+        hashed_password = generate_password_hash(pas)
         student = Student(
-            name=name, email=email, password_hash=hashed_password,
+            name=name, email=email, pas=hashed_password,
             branch=branch, cgpa=float(cgpa) if cgpa else 0.0
         )
         db.session.add(student)
         db.session.commit()
         
-        flash('Student registration successful! You can now log in.', 'success')
-        return redirect(url_for('login'))
+        flash('Registration successful!', 'success')
+        return redirect('/login')
         
-    return render_template('register_student.html')
+    return render_template('studentReg.html')
 
 
 @app.route('/register/company', methods=['GET', 'POST'])
-def register_company():
+def companyReg():
     if request.method == 'POST':
         name = request.form.get('name')
         email = request.form.get('email')
-        password = request.form.get('password')
-        industry = request.form.get('industry')
-        hr_contact = request.form.get('hr_contact')
-        website = request.form.get('website')
+        pas = request.form.get('pas')
+        industry = request.form.get('idy')
+        hr_contact = request.form.get('hr')
+        website = request.form.get('site')
 
         existing_company = Company.query.filter_by(email=email).first()
         if existing_company:
-            flash('Email already registered!', 'danger')
-            return redirect(url_for('register_company'))
+            flash('Already registered!', 'danger')
+            return redirect('/register/company')
         
-        hashed_password = generate_password_hash(password)
+        hashed_password = generate_password_hash(pas)
         company = Company(
-            name=name, email=email, password_hash=hashed_password,
-            industry=industry, hr_contact=hr_contact, website=website
+            name=name, email=email, pas=hashed_password,
+            idy=industry, hr=hr_contact, site=website
         )
         db.session.add(company)
         db.session.commit()
         
-        flash('Company registration successful! Please wait for admin approval.', 'success')
-        return redirect(url_for('login'))
+        flash('Registration successful!', 'success')
+        return redirect('/login')
         
-    return render_template('register_company.html')
+    return render_template('companyReg.html')
 
 
 @app.route('/logout')
 def logout():
     session.clear()
-    flash('Logged out successfully.', 'info')
-    return redirect(url_for('login'))
+    flash('Logged out', 'info')
+    return redirect('/login')
 
-
-# --- ADMIN ROUTES ---
 
 @app.route('/admin')
 def admin_dashboard():
     if session.get('role') != 'admin':
-        return redirect(url_for('login'))
+        return redirect('/login')
         
     students = Student.query.count()
     companies = Company.query.count()
@@ -151,7 +149,7 @@ def admin_dashboard():
 @app.route('/admin/companies')
 def admin_companies():
     if session.get('role') != 'admin':
-        return redirect(url_for('login'))
+        return redirect('/login')
         
     search = request.args.get('search', '')
     if search:
@@ -159,45 +157,45 @@ def admin_companies():
     else:
         companies = Company.query.all()
         
-    return render_template('admin/manage_companies.html', companies=companies)
+    return render_template('admin/manageCom.html', companies=companies)
 
 
 @app.route('/admin/companies/approve/<int:company_id>')
-def approve_company(company_id):
+def apprCom(company_id):
     if session.get('role') != 'admin':
-        return redirect(url_for('login'))
+        return redirect('/login')
         
     company = db.session.get(Company, company_id)
     if company:
-        company.is_approved = True
+        company.appr = True
         db.session.commit()
-        flash(f'{company.name} approved successfully.', 'success')
+        flash(f'{company.name} approved.', 'success')
         
-    return redirect(url_for('admin_companies'))
+    return redirect('/admin/companies')
 
 
 @app.route('/admin/companies/blacklist/<int:company_id>')
-def blacklist_company(company_id):
+def blacklistCom(company_id):
     if session.get('role') != 'admin':
-        return redirect(url_for('login'))
+        return redirect('/login')
         
     company = db.session.get(Company, company_id)
     if company:
-        if company.is_blacklisted:
-            company.is_blacklisted = False
-            flash(f'{company.name} Un-blacklisted successfully.', 'success')
+        if company.blacklisted:
+            company.blacklisted = False
+            flash(f'{company.name} Blacklist Removed', 'success')
         else:
-            company.is_blacklisted = True
-            flash(f'{company.name} Blacklisted successfully.', 'success')
+            company.blacklisted = True
+            flash(f'{company.name} Blacklisted', 'success')
         db.session.commit()
         
-    return redirect(url_for('admin_companies'))
+    return redirect('/admin/companies')
 
 
 @app.route('/admin/students')
-def admin_students():
+def adminSearchSt():
     if session.get('role') != 'admin':
-        return redirect(url_for('login'))
+        return redirect('/login')
         
     search = request.args.get('search', '')
     if search:
@@ -205,121 +203,119 @@ def admin_students():
     else:
         students = Student.query.all()
         
-    return render_template('admin/manage_students.html', students=students)
+    return render_template('admin/manageSt.html', students=students)
 
 
 @app.route('/admin/students/blacklist/<int:student_id>')
-def blacklist_student(student_id):
+def blacklistStudent(student_id):
     if session.get('role') != 'admin':
-        return redirect(url_for('login'))
+        return redirect('/login')
         
     student = db.session.get(Student, student_id)
     if student:
-        if student.is_blacklisted:
-            student.is_blacklisted = False
-            flash(f'{student.name} Un-blacklisted successfully.', 'success')
+        if student.blacklisted:
+            student.blacklisted = False
+            flash(f'{student.name} Blacklist Removed', 'success')
         else:
-            student.is_blacklisted = True
-            flash(f'{student.name} Blacklisted successfully.', 'success')
+            student.blacklisted = True
+            flash(f'{student.name} Blacklisted', 'success')
         db.session.commit()
         
-    return redirect(url_for('admin_students'))
+    return redirect('/admin/students')
 
 
 @app.route('/admin/drives')
-def admin_drives():
+def adminDrives():
     if session.get('role') != 'admin':
-        return redirect(url_for('login'))
+        return redirect('/login')
         
     drives = PlacementDrive.query.all()
-    return render_template('admin/manage_drives.html', drives=drives)
+    return render_template('admin/manageDrives.html', drives=drives)
 
 
 @app.route('/admin/drives/approve/<int:drive_id>')
 def approve_drive(drive_id):
     if session.get('role') != 'admin':
-        return redirect(url_for('login'))
+        return redirect('/login')
         
     drive = db.session.get(PlacementDrive, drive_id)
     if drive:
         drive.status = 'approved'
         db.session.commit()
-        flash(f'Drive {drive.title} approved!', 'success')
+        flash(f'Drive {drive.title} approved', 'success')
         
-    return redirect(url_for('admin_drives'))
+    return redirect('/admin/drives')
 
 
 @app.route('/admin/drives/reject/<int:drive_id>')
 def reject_drive(drive_id):
     if session.get('role') != 'admin':
-        return redirect(url_for('login'))
+        return redirect('/login')
         
     drive = db.session.get(PlacementDrive, drive_id)
     if drive:
         drive.status = 'rejected'
         db.session.commit()
-        flash(f'Drive {drive.title} rejected!', 'warning')
+        flash(f'Drive {drive.title} rejected', 'warning')
         
-    return redirect(url_for('admin_drives'))
+    return redirect('/admin/drives')
 
 
 @app.route('/admin/applications')
-def admin_applications():
+def adminApp():
     if session.get('role') != 'admin':
-        return redirect(url_for('login'))
+        return redirect('/login')
         
     applications = Application.query.all()
-    return render_template('admin/manage_applications.html', applications=applications)
+    return render_template('admin/manageApp.html', applications=applications)
 
-
-# --- COMPANY ROUTES ---
 
 @app.route('/company')
-def company_dashboard():
+def cDashboard():
     if session.get('role') != 'company':
-        return redirect(url_for('login'))
+        return redirect('/login')
         
     company = db.session.get(Company, session['user_id'])
-    drives = PlacementDrive.query.filter_by(company_id=company.id).all()
+    drives = PlacementDrive.query.filter_by(cmpyID=company.id).all()
     
     return render_template('company/dashboard.html', company=company, drives=drives)
 
 
 @app.route('/company/profile', methods=['GET', 'POST'])
-def company_profile():
+def cProfile():
     if session.get('role') != 'company':
-        return redirect(url_for('login'))
+        return redirect('/login')
         
     company = db.session.get(Company, session['user_id'])
     
     if request.method == 'POST':
         company.name = request.form.get('name')
-        company.industry = request.form.get('industry')
-        company.hr_contact = request.form.get('hr_contact')
-        company.website = request.form.get('website')
+        company.idy = request.form.get('idy')
+        company.hr = request.form.get('hr')
+        company.site = request.form.get('site')
         
         db.session.commit()
         session['name'] = company.name
         flash('Company profile updated.', 'success')
-        return redirect(url_for('company_profile'))
+        return redirect('/company/profile')
         
     return render_template('company/profile.html', company=company)
 
 
 @app.route('/company/drive/create', methods=['GET', 'POST'])
-def create_drive():
+def createDrive():
     if session.get('role') != 'company':
-        return redirect(url_for('login'))
+        return redirect('/login')
         
     company = db.session.get(Company, session['user_id'])
-    if not company.is_approved:
-        flash('You must be approved by an Admin to create placement drives.', 'warning')
-        return redirect(url_for('company_dashboard'))
+    if not company.appr:
+        flash('Wait for approval', 'warning')
+        return redirect('/company')
         
     if request.method == 'POST':
         title = request.form.get('title')
-        job_description = request.form.get('job_description')
-        eligibility_criteria = request.form.get('eligibility_criteria')
+        jd = request.form.get('jd')
+        eligibility = request.form.get('eligibility')
         deadline_str = request.form.get('deadline')
         
         if deadline_str:
@@ -328,169 +324,167 @@ def create_drive():
             deadline = None
 
         new_drive = PlacementDrive(
-            title=title, 
-            job_description=job_description,
-            eligibility_criteria=eligibility_criteria, 
+            title=title,
+            jd=jd,
+            eligibility=eligibility,
             deadline=deadline,
-            company_id=session['user_id'],
+            cmpyID=session['user_id'],
             status='pending'
         )
         db.session.add(new_drive)
         db.session.commit()
         
-        flash('Drive created successfully! Awaiting admin approval.', 'success')
-        return redirect(url_for('company_dashboard'))
+        flash('Successful, Wait for approval', 'success')
+        return redirect('/company')
         
-    return render_template('company/create_drive.html')
+    return render_template('company/createDrive.html')
 
 
 @app.route('/company/drive/edit/<int:drive_id>', methods=['GET', 'POST'])
 def edit_drive(drive_id):
     if session.get('role') != 'company':
-        return redirect(url_for('login'))
+        return redirect('/login')
         
     company = db.session.get(Company, session['user_id'])
-    if not company.is_approved:
-        flash('You must be approved by an Admin to edit placement drives.', 'warning')
-        return redirect(url_for('company_dashboard'))
+    if not company.appr:
+        flash('Wait for approval', 'warning')
+        return redirect('/company')
         
     drive = db.session.get(PlacementDrive, drive_id)
-    if not drive or drive.company_id != session['user_id']:
-        flash('Unauthorized access.', 'danger')
-        return redirect(url_for('company_dashboard'))
+    if not drive or drive.cmpyID != session['user_id']:
+        flash('Unauthorized', 'danger')
+        return redirect('/company')
         
     if request.method == 'POST':
         drive.title = request.form.get('title')
-        drive.job_description = request.form.get('job_description')
-        drive.eligibility_criteria = request.form.get('eligibility_criteria')
+        drive.jd = request.form.get('jd')
+        drive.eligibility = request.form.get('eligibility')
         deadline_str = request.form.get('deadline')
         
         if deadline_str:
             drive.deadline = datetime.strptime(deadline_str, '%Y-%m-%d')
             
         db.session.commit()
-        flash('Drive updated successfully.', 'success')
-        return redirect(url_for('company_dashboard'))
+        flash('Update Done', 'success')
+        return redirect('/company')
         
-    return render_template('company/edit_drive.html', drive=drive)
+    return render_template('company/editDrive.html', drive=drive)
 
 
 @app.route('/company/drive/close/<int:drive_id>')
 def close_drive(drive_id):
     if session.get('role') != 'company':
-        return redirect(url_for('login'))
+        return redirect('/login')
         
     drive = db.session.get(PlacementDrive, drive_id)
-    if drive and drive.company_id == session['user_id']:
+    if drive and drive.cmpyID == session['user_id']:
         drive.status = 'closed'
         db.session.commit()
-        flash('Drive has been closed.', 'success')
+        flash('Closed', 'success')
         
-    return redirect(url_for('company_dashboard'))
+    return redirect('/company')
 
 
 @app.route('/company/drive/delete/<int:drive_id>')
 def delete_drive(drive_id):
     if session.get('role') != 'company':
-        return redirect(url_for('login'))
+        return redirect('/login')
         
     drive = db.session.get(PlacementDrive, drive_id)
-    if drive and drive.company_id == session['user_id']:
-        Application.query.filter_by(drive_id=drive.id).delete()
+    if drive and drive.cmpyID == session['user_id']:
+        Application.query.filter_by(driveID=drive.id).delete()
         db.session.delete(drive)
         db.session.commit()
-        flash('Drive has been deleted.', 'success')
+        flash('Deleted', 'success')
         
-    return redirect(url_for('company_dashboard'))
+    return redirect('/company')
 
 
 @app.route('/company/drive/<int:drive_id>/applications')
 def view_applications(drive_id):
     if session.get('role') != 'company':
-        return redirect(url_for('login'))
+        return redirect('/login')
         
     drive = db.session.get(PlacementDrive, drive_id)
-    if not drive or drive.company_id != session['user_id']:
-        flash('Unauthorized access.', 'danger')
-        return redirect(url_for('company_dashboard'))
+    if not drive or drive.cmpyID != session['user_id']:
+        flash('Unauthorized', 'danger')
+        return redirect('/company')
     
-    applications = Application.query.filter_by(drive_id=drive.id).all()
-    return render_template('company/view_applications.html', drive=drive, applications=applications)
+    applications = Application.query.filter_by(driveID=drive.id).all()
+    return render_template('company/viewApp.html', drive=drive, applications=applications)
 
 
 @app.route('/company/application/<int:app_id>/status', methods=['POST'])
-def update_application_status(app_id):
+def updateAppStatus(app_id):
     if session.get('role') != 'company':
-        return redirect(url_for('login'))
+        return redirect('/login')
         
     application = db.session.get(Application, app_id)
-    if not application or application.drive.company_id != session['user_id']:
-        flash('Unauthorized.', 'danger')
-        return redirect(url_for('company_dashboard'))
+    if not application or application.drive.cmpyID != session['user_id']:
+        flash('Unauthorized', 'danger')
+        return redirect('/company')
     
     status = request.form.get('status')
     if status in ['Applied', 'Shortlisted', 'Selected', 'Rejected']:
         application.status = status
         db.session.commit()
-        flash('Application status updated.', 'success')
+        flash('Status updated', 'success')
         
-    return redirect(url_for('view_applications', drive_id=application.drive_id))
+    return redirect(f'/company/drive/{application.driveID}/applications')
 
-
-# --- STUDENT ROUTES ---
 
 @app.route('/student')
 def student_dashboard():
     if session.get('role') != 'student':
-        return redirect(url_for('login'))
+        return redirect('/login')
         
     drives = PlacementDrive.query.filter_by(status='approved').all()
     
     student_id = session['user_id']
-    applied_drive_ids = []
+    appliedDriveID = []
     
-    my_applications = Application.query.filter_by(student_id=student_id).all()
+    my_applications = Application.query.filter_by(stdID=student_id).all()
     for app in my_applications:
-        applied_drive_ids.append(app.drive_id)
+        appliedDriveID.append(app.driveID)
         
-    return render_template('student/dashboard.html', drives=drives, applied_drive_ids=applied_drive_ids)
+    return render_template('student/dashboard.html', drives=drives, appliedDriveID=appliedDriveID)
 
 
 @app.route('/student/apply/<int:drive_id>', methods=['POST'])
 def apply_drive(drive_id):
     if session.get('role') != 'student':
-        return redirect(url_for('login'))
+        return redirect('/login')
         
     student_id = session['user_id']
-    existing_application = Application.query.filter_by(student_id=student_id, drive_id=drive_id).first()
+    existing_application = Application.query.filter_by(stdID=student_id, driveID=drive_id).first()
     
     if existing_application:
-        flash('You have already applied for this drive.', 'warning')
-        return redirect(url_for('student_dashboard'))
+        flash('Already applied.', 'warning')
+        return redirect('/student')
     
-    application = Application(student_id=student_id, drive_id=drive_id)
+    application = Application(stdID=student_id, driveID=drive_id)
     db.session.add(application)
     db.session.commit()
     
-    flash('Successfully applied to the drive!', 'success')
-    return redirect(url_for('student_dashboard'))
+    flash('Successfully applied!', 'success')
+    return redirect('/student')
 
 
 @app.route('/student/applications')
 def student_applications():
     if session.get('role') != 'student':
-        return redirect(url_for('login'))
+        return redirect('/login')
         
-    student_id = session['user_id']
-    applications = Application.query.filter_by(student_id=student_id).all()
+    stID = session['user_id']
+    applications = Application.query.filter_by(stdID=stID).all()
     
-    return render_template('student/my_applications.html', applications=applications)
+    return render_template('student/viewAppSt.html', applications=applications)
 
 
 @app.route('/student/profile', methods=['GET', 'POST'])
-def student_profile():
+def stProfile():
     if session.get('role') != 'student':
-        return redirect(url_for('login'))
+        return redirect('/login')
         
     student = db.session.get(Student, session['user_id'])
     
@@ -502,14 +496,23 @@ def student_profile():
         if cgpa:
             student.cgpa = float(cgpa)
             
-        student.resume_url = request.form.get('resume_url')
+        student.resume = request.form.get('resume')
         
         db.session.commit()
         session['name'] = student.name
-        flash('Profile updated.', 'success')
-        return redirect(url_for('student_profile'))
+        flash('Profile updated', 'success')
+        return redirect('/student/profile')
         
     return render_template('student/profile.html', student=student)
+
+
+@app.errorhandler(404)
+def page_not_found(e):
+    return render_template('404.html'), 404
+
+@app.errorhandler(500)
+def internal_server_error(e):
+    return render_template('500.html'), 500
 
 
 if __name__ == '__main__':

@@ -1,16 +1,16 @@
 {% extends 'base.html' %}
 
 {% block content %}
-<h3>Manage Placement Drives</h3>
+<h3>Placement Drives</h3>
 
 <table border="1" cellpadding="5" cellspacing="0" style="width: 100%;">
     <tr style="background-color: #ddd;">
         <th>Drive ID</th>
         <th>Company Name</th>
         <th>Job Title</th>
-        <th>Registration Deadline</th>
-        <th>Current Status</th>
-        <th>Actions to Take</th>
+        <th>Deadline</th>
+        <th>Status</th>
+        <th>Actions</th>
     </tr>
     {% for drive in drives %}
     <tr>
@@ -32,21 +32,21 @@
             {% elif drive.status == 'closed' %}
                 <span style="color: gray;">Closed</span>
             {% else %}
-                <span style="color: orange;">Pending...</span>
+                <span style="color: orange;">Pending</span>
             {% endif %}
         </td>
         <td>
             {% if drive.status == 'pending' %}
-                <a href="{{ url_for('approve_drive', drive_id=drive.id) }}">Approve</a> | 
-                <a href="{{ url_for('reject_drive', drive_id=drive.id) }}">Reject</a>
+                <a href="/admin/drives/approve/{{ drive.id }}">Approve</a> | 
+                <a href="/admin/drives/reject/{{ drive.id }}">Reject</a>
             {% else %}
-                No actions available
+                No actions
             {% endif %}
         </td>
     </tr>
     {% else %}
     <tr>
-        <td colspan="6">No placement drives found.</td>
+        <td colspan="6">No placement drives</td>
     </tr>
     {% endfor %}
 </table>
