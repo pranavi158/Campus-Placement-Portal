@@ -1,0 +1,164 @@
+openapi: 3.0.0
+info:
+  title: Placement Portal API
+  description: API endpoints for managing university placements, including students, companies, applications, and admin controls.
+  version: 1.0.0
+paths:
+  /login:
+    post:
+      summary: Authenticate user and generate session
+      requestBody:
+        content:
+          application/x-www-form-urlencoded:
+            schema:
+              type: object
+              properties:
+                role:
+                  type: string
+                  enum: [admin, company, student]
+                email:
+                  type: string
+                pas:
+                  type: string
+      responses:
+        '302':
+          description: Redirect to respective dashboard on success
+
+  /register/student:
+    post:
+      summary: Register a new student
+      requestBody:
+        content:
+          application/x-www-form-urlencoded:
+            schema:
+              type: object
+              properties:
+                name:
+                  type: string
+                email:
+                  type: string
+                pas:
+                  type: string
+                branch:
+                  type: string
+                cgpa:
+                  type: number
+                  format: float
+      responses:
+        '302':
+          description: Redirect on success
+
+  /register/company:
+    post:
+      summary: Register a new company (pending admin approval)
+      requestBody:
+        content:
+          application/x-www-form-urlencoded:
+            schema:
+              type: object
+              properties:
+                name:
+                  type: string
+                email:
+                  type: string
+                pas:
+                  type: string
+                idy:
+                  type: string
+                hr:
+                  type: string
+                site:
+                  type: string
+      responses:
+        '302':
+          description: Redirect on success
+
+  /logout:
+    get:
+      summary: Clear session and logout
+      responses:
+        '302':
+          description: Redirect to login
+
+  /company/drive/create:
+    post:
+      summary: Create a new placement drive (Company only)
+      requestBody:
+        content:
+          application/x-www-form-urlencoded:
+            schema:
+              type: object
+              properties:
+                title:
+                  type: string
+                jd:
+                  type: string
+                eligibility:
+                  type: string
+                deadline:
+                  type: string
+                  format: date
+      responses:
+        '302':
+          description: Redirect to company dashboard
+
+  /student/apply/{drive_id}:
+    post:
+      summary: Apply to a specific placement drive (Student only)
+      parameters:
+        - in: path
+          name: drive_id
+          required: true
+          schema:
+            type: integer
+      responses:
+        '302':
+          description: Redirect to student dashboard
+
+  /company/application/{app_id}/status:
+    post:
+      summary: Update the status of a specific student application (Company only)
+      parameters:
+        - in: path
+          name: app_id
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        content:
+          application/x-www-form-urlencoded:
+            schema:
+              type: object
+              properties:
+                status:
+                  type: string
+                  enum: [Applied, Shortlisted, Selected, Rejected]
+      responses:
+        '302':
+          description: Redirect back to applicant list
+
+  /admin/companies/approve/{company_id}:
+    get:
+      summary: Approve a registered company (Admin only)
+      parameters:
+        - in: path
+          name: company_id
+          required: true
+          schema:
+            type: integer
+      responses:
+        '302':
+          description: Redirect back to company management
+
+  /admin/drives/approve/{drive_id}:
+    get:
+      summary: Approve a placement drive posted by a company (Admin only)
+      parameters:
+        - in: path
+          name: drive_id
+          required: true
+          schema:
+            type: integer
+      responses:
+        '302':
+          description: Redirect back to drives management
