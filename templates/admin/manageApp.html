@@ -12,13 +12,17 @@
         <th>Application Date</th>
         <th>Result</th>
     </tr>
+
     {% for app in applications %}
     <tr>
         <td>{{ app.id }}</td>
-        <td>{{ app.student.name }} <br><small>({{ app.student.email }})</small></td>
+        <td>
+            {{ app.student.name }} <br>
+            <small>({{ app.student.email }})</small>
+        </td>
         <td>{{ app.drive.company.name }}</td>
         <td>{{ app.drive.title }}</td>
-        <td>{{ app.appDate.strftime('%Y-%m-%d %H:%M') }}</td>
+        <td>{{ app.applied_date.strftime('%Y-%m-%d %H:%M') }}</td>
         <td><strong>{{ app.status }}</strong></td>
     </tr>
     {% else %}

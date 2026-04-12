@@ -3,9 +3,11 @@
 {% block content %}
 <h3>Dashboard: {{ company.name }}</h3>
 
-<p><a href="/company/drive/create" style="border: 1px solid #000; padding: 5px; text-decoration: none; background-color: #eee;">+ Create New Placement Drive</a></p>
-
-{% if not company.appr %}
+<p>
+    <a href="/company/drive/create" style="border: 1px solid #000; padding: 5px; text-decoration: none; background-color: #eee;">
+        + Create New Placement Drive
+    </a>
+</p>{% if not company.approved %}
 <p style="color: red; border: 1px solid red; padding: 10px;">
     <i>Warning: Your profile is pending admin approval</i>
 </p>
@@ -21,6 +23,7 @@
         <th>No. of Applicants</th>
         <th>Actions</th>
     </tr>
+
     {% for drive in drives %}
     <tr>
         <td>{{ drive.id }}</td>
@@ -35,10 +38,10 @@
         <td><strong>{{ drive.status.upper() }}</strong></td>
         <td>{{ drive.application|length }}</td>
         <td>
-            <a href="/company/drive/{{ drive.id }}/applications">View Applicants</a> | 
-            <a href="/company/drive/edit/{{ drive.id }}">Edit Drive</a> | 
+            <a href="/company/drive/{{ drive.id }}/applications">View Applicants</a> |
+            <a href="/company/drive/edit/{{ drive.id }}">Edit Drive</a> |
             {% if drive.status != 'closed' %}
-                <a href="/company/drive/close/{{ drive.id }}">Close</a> | 
+                <a href="/company/drive/close/{{ drive.id }}">Close</a> |
             {% endif %}
             <a href="/company/drive/delete/{{ drive.id }}" style="color: red;">Delete</a>
         </td>

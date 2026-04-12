@@ -11,16 +11,14 @@
         <p><strong>Student Name:</strong> {{ app.student.name }}</p>
         <p><strong>Branch:</strong> {{ app.student.branch }}</p>
         <p><strong>CGPA:</strong> {{ app.student.cgpa }}</p>
-        <p><strong>Applied On:</strong> {{ app.appDate.strftime('%Y-%m-%d') }}</p>
-        <p><strong>Resume:</strong> 
+        <p><strong>Applied On:</strong> {{ app.applied_date.strftime('%Y-%m-%d') }}</p>
+        <p><strong>Resume:</strong>
             {% if app.student.resume %}
                 <a href="{{ app.student.resume }}" target="_blank">View Resume</a>
             {% else %}
                 None Provided
             {% endif %}
-        </p>
-
-        <form method="POST" action="/company/application/{{ app.id }}/status">
+        </p><form method="POST" action="/company/application/{{ app.id }}/status">
             Current Decision / Status:
             <select name="status">
                 <option value="Applied" {% if app.status == 'Applied' %}selected{% endif %}>Just Applied</option>

@@ -2,6 +2,7 @@
 
 {% block content %}
 <h3>Login Page</h3>
+
 <form method="POST" style="border: 1px solid #ccc; padding: 20px; width: 300px;">
     <p>
         <label>Select Role:</label><br>
@@ -19,8 +20,7 @@
         <label>Password:</label><br>
         <input type="password" name="pas" required>
     </p>
+
     <input type="submit" value="Login">
 </form>
-<br>
-<a href="/register/student">Register</a>
 {% endblock %}

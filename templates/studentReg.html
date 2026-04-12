@@ -2,6 +2,7 @@
 
 {% block content %}
 <h3>Student Registration Form</h3>
+
 <form method="POST" style="border: 1px solid #ccc; padding: 20px; width: 350px;">
     <p>
         <label>Name:</label><br>
@@ -19,12 +20,13 @@
         <label>Branch:</label><br>
         <input type="text" name="branch" required>
     </p>
-    <p>
-        <label>CGPA:</label><br>
+    <p><label>CGPA:</label><br>
         <input type="number" step="0.01" name="cgpa" required>
     </p>
+
     <input type="submit" value="Register">
 </form>
+
 <br>
 <a href="/login">Go to Login</a>
 {% endblock %}

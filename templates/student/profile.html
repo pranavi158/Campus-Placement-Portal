@@ -8,8 +8,7 @@
         <label>Full Name:</label><br>
         <input type="text" name="name" value="{{ student.name }}" required>
     </p>
-    <p>
-        <label>Email Address:</label><br>
+    <p><label>Email Address:</label><br>
         <input type="email" value="{{ student.email }}" disabled>
     </p>
     <p>
@@ -24,7 +23,7 @@
         <label>Resume Link (Google Drive Link):</label><br>
         <input type="url" name="resume" value="{{ student.resume or '' }}">
     </p>
-    
+
     <input type="submit" value="Update">
 </form>
 

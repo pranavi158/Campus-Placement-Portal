@@ -8,8 +8,7 @@
         <label>Company Name:</label><br>
         <input type="text" name="name" value="{{ company.name }}" required>
     </p>
-    <p>
-        <label>Email:</label><br>
+    <p><label>Email:</label><br>
         <input type="email" value="{{ company.email }}" disabled>
     </p>
     <p>
@@ -18,12 +17,13 @@
     </p>
     <p>
         <label>HR Contact:</label><br>
-        <input type="text" name="hr" value="{{ company.hr_contact }}" required>
+        <input type="text" name="hr" value="{{ company.hr }}" required>
     </p>
     <p>
         <label>Website:</label><br>
-        <input type="url" name="site" value="{{ company.website or '' }}">
+        <input type="url" name="site" value="{{ company.site or '' }}">
     </p>
+
     <input type="submit" value="Update">
 </form>
 

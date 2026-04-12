@@ -8,20 +8,18 @@
     <div style="border: 1px solid #000; padding: 15px; margin: 10px; width: 300px;">
         <h4 style="margin: 0;">{{ drive.title }}</h4>
         <p style="margin: 5px 0;"><strong>Company:</strong> {{ drive.company.name }}</p>
-        
-        <p><strong>Apply Before:</strong> 
+
+        <p><strong>Apply Before:</strong>
             {% if drive.deadline %}
                 {{ drive.deadline.strftime('%Y-%m-%d') }}
             {% else %}
                 N/A
             {% endif %}
         </p>
-        
+
         <p><strong>Job Details:</strong><br>{{ drive.jd }}</p>
         <p><strong>Required Eligibility:</strong><br>{{ drive.eligibility }}</p>
-        <hr>
-        
-        {% if drive.id in appliedDriveID %}
+        <hr>{% if drive.id in appliedDriveID %}
             <p style="color: green; font-weight: bold;">You Have Already Applied!</p>
         {% else %}
             <form method="POST" action="/student/apply/{{ drive.id }}">

@@ -1,7 +1,7 @@
 {% extends 'base.html' %}
 
 {% block content %}
-<h3>Edit</h3>
+<h3>Edit Drive</h3>
 
 <form method="POST" style="border: 1px solid #ccc; padding: 20px; width: 400px;">
     <p>
@@ -17,11 +17,12 @@
         <textarea name="eligibility" rows="3" cols="40">{{ drive.eligibility }}</textarea>
     </p>
     <p>
-        <label>Deadline:</label><br>
-        <input type="date" name="deadline" value="{{ drive.deadline.strftime('%Y-%m-%d') if drive.deadline else '' }}" required>
+        <label>Deadline:</label><br><input type="date" name="deadline" value="{{ drive.deadline.strftime('%Y-%m-%d') if drive.deadline else '' }}" required>
     </p>
+
     <input type="submit" value="Update Drive">
 </form>
+
 <br>
 <a href="/company">Go back</a>
 {% endblock %}

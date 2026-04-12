@@ -4,7 +4,7 @@
 <h3>Registered Students</h3>
 
 <form method="GET" action="/admin/students" style="margin-bottom: 20px;">
-    Search (by Name, ID, or Email): 
+    Search (by Name, ID, or Email):
     <input type="text" name="search" value="{{ request.args.get('search', '') }}">
     <input type="submit" value="Search">
 </form>
@@ -19,6 +19,7 @@
         <th>Status</th>
         <th>Actions</th>
     </tr>
+
     {% for student in students %}
     <tr>
         <td>{{ student.id }}</td>

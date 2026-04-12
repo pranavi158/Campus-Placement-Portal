@@ -2,6 +2,7 @@
 
 {% block content %}
 <h3>Company Registration Form</h3>
+
 <form method="POST" style="border: 1px solid #ccc; padding: 20px; width: 350px;">
     <p>
         <label>Company Name:</label><br>
@@ -23,12 +24,13 @@
         <label>HR Contact:</label><br>
         <input type="text" name="hr" required>
     </p>
-    <p>
-        <label>Website:</label><br>
+    <p><label>Website:</label><br>
         <input type="url" name="site">
     </p>
+
     <input type="submit" value="Register">
 </form>
+
 <br>
 <a href="/login">Go to Login</a>
 {% endblock %}

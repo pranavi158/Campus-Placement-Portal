@@ -12,6 +12,7 @@
         <th>Status</th>
         <th>Actions</th>
     </tr>
+
     {% for drive in drives %}
     <tr>
         <td>{{ drive.id }}</td>
@@ -21,11 +22,10 @@
             {% if drive.deadline %}
                 {{ drive.deadline.strftime('%Y-%m-%d') }}
             {% else %}
-                No deadline 
+                No deadline
             {% endif %}
         </td>
-        <td>
-            {% if drive.status == 'approved' %}
+        <td>{% if drive.status == 'approved' %}
                 <span style="color: green;">Approved</span>
             {% elif drive.status == 'rejected' %}
                 <span style="color: red;">Rejected</span>
@@ -37,7 +37,7 @@
         </td>
         <td>
             {% if drive.status == 'pending' %}
-                <a href="/admin/drives/approve/{{ drive.id }}">Approve</a> | 
+                <a href="/admin/drives/approve/{{ drive.id }}">Approve</a> |
                 <a href="/admin/drives/reject/{{ drive.id }}">Reject</a>
             {% else %}
                 No actions

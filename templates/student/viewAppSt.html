@@ -11,11 +11,12 @@
         <th>Deadline</th>
         <th>Status</th>
     </tr>
+
     {% for app in applications %}
     <tr>
         <td>{{ app.drive.company.name }}</td>
         <td>{{ app.drive.title }}</td>
-        <td>{{ app.appDate.strftime('%Y-%m-%d %H:%M') }}</td>
+        <td>{{ app.applied_date.strftime('%Y-%m-%d %H:%M') }}</td>
         <td>
             {% if app.drive.deadline %}
                 {{ app.drive.deadline.strftime('%Y-%m-%d') }}
@@ -26,8 +27,7 @@
         <td><strong>{{ app.status }}</strong></td>
     </tr>
     {% else %}
-    <tr>
-        <td colspan="5">No Applied Placement Drives</td>
+    <tr><td colspan="5">No Applied Placement Drives</td>
     </tr>
     {% endfor %}
 </table>
