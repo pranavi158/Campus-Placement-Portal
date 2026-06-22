@@ -1,24 +1,24 @@
-# Campus Placement Portal 🎓💼
+# Campus Placement Portal
 
 A modern, highly secure, and feature-rich **MERN-stack** (MongoDB, Express.js, React.js, Node.js) web application designed to streamline campus recruitment drives, student job application cycles, and university placement officer admin management.
 
 ---
 
-## 🚀 Key Features
+## Key Features
 
-### 👤 Student Dashboard
+### Student Dashboard
 - **Profile Customization**: Manage contact information, roll number, year of passing, active backlogs, LinkedIn/GitHub urls, and academic branch/specialization.
 - **Interactive Resume Desk**: Upload PDF resumes safely with size limits (< 5MB) and automated old-file cleanups.
 - **Job Opportunities & Search**: Browse actively approved recruiter job postings with search keyword parameters (location, job type, minimum CGPA).
 - **Placement & CTC Records**: Track application logs (Applied, Shortlisted, Selected, Rejected) and view congratulations notifications once placed, indicating the CTC package package.
 
-### 🏢 Recruiter / Company Panel
+### Recruiter / Company Panel
 - **Company Verification Request**: Register corporate industry sector, website address, and HR representative details (awaits admin approval).
 - **Job Drive Manager**: Create, update, and close job postings specifying details such as location, CTC offered, min CGPA requirements, interview rounds, and eligible branches.
 - **Applicant Review Desk**: Access and filter candidate profiles who applied for posted job drives and view resume PDFs.
 - **Candidate Hiring Panel**: Shortlist, reject, or select candidates (hiring a candidate automatically marks the student as placed with the drive's CTC).
 
-### 👑 Placement Officer (Admin) Control
+### Placement Officer (Admin) Control
 - **Global Overview**: Track placement portal stats (total students registered, companies active, job drives approved, and global applications submitted).
 - **Verification Center**: Approve pending company registries and drive posts before they go live.
 - **Account Moderation**: Blacklist/restore access for student profiles and recruiter accounts.
@@ -26,7 +26,7 @@ A modern, highly secure, and feature-rich **MERN-stack** (MongoDB, Express.js, R
 
 ---
 
-## 🛠️ Tech Stack
+## Tech Stack
 
 - **Frontend**: React (v19), React Router (v6), Vite, Lucide React (Icons).
 - **Backend**: Node.js, Express.js, JWT Authentication, Multer (PDF File Uploads).
@@ -35,7 +35,7 @@ A modern, highly secure, and feature-rich **MERN-stack** (MongoDB, Express.js, R
 
 ---
 
-## 📁 Project Structure
+## Project Structure
 
 ```text
 ├── backend/                   # Node/Express API Server
@@ -55,7 +55,7 @@ A modern, highly secure, and feature-rich **MERN-stack** (MongoDB, Express.js, R
 
 ---
 
-## ⚙️ Installation & Local Setup
+## Installation & Local Setup
 
 ### Prerequisites
 - [Node.js](https://nodejs.org/) (v18+ recommended)
@@ -101,7 +101,7 @@ npm run dev
 
 ---
 
-## 🛡️ Security Implementation
+## Security Implementation
 - **HTTP Header Security**: Utilizes `helmet` to set secure response headers preventing cross-site scripting (XSS) and clickjacking.
 - **API Rate Limiting**: REST Auth API endpoints are protected against brute-force login attacks using window-based request rules (100 requests per 15 minutes max).
 - **Backend Data Validation**: Request payloads undergo strict validation schemas using `express-validator` prior to database writes.
