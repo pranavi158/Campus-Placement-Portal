@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useAuth } from '../context/AuthContext';
 import { Search, FileText, AlertOctagon, Undo2 } from 'lucide-react';
 import Toast from '../components/Toast';
+import { getUploadUrl } from '../config/api';
 
 const ManageStudents = () => {
   const { apiCall } = useAuth();
@@ -142,7 +143,7 @@ const ManageStudents = () => {
                       <td>
                         {student.resume ? (
                           <a 
-                            href={`http://localhost:5001/uploads/${student.resume}`} 
+                            href={getUploadUrl(student.resume)} 
                             target="_blank" 
                             rel="noopener noreferrer"
                             style={{ display: 'inline-flex', alignItems: 'center', gap: '0.25rem', color: 'var(--accent-gold)' }}

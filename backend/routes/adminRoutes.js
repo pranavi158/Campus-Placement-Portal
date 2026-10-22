@@ -4,6 +4,7 @@ const Student = require('../models/Student');
 const Company = require('../models/Company');
 const Drive = require('../models/Drive');
 const Application = require('../models/Application');
+const { addDriveNotificationJob } = require('../queues/emailQueue');
 
 const router = express.Router();
 
@@ -228,6 +229,19 @@ router.put('/drives/approve/:id', async (req, res) => {
 
     drive.status = 'approved';
     await drive.save();
+
+    // Populate company to get name
+    await drive.populate('company', 'name');
+
+    // Asynchronously dispatch email notification job to Redis Queue
+    addDriveNotificationJob({
+      driveId: drive._id,
+      companyName: drive.company ? drive.company.name : 'Partner Company',
+      title: drive.title,
+      eligibleBranches: drive.allowedBranches || [],
+      minCGPA: drive.minCGPA || 0,
+      ctc: drive.ctc ? `$${drive.ctc} LPA` : undefined,
+    }).catch((err) => console.error('Error adding drive email job to Redis queue:', err));
 
     return res.json({ message: `Drive ${drive.title} approved`, drive });
   } catch (error) {

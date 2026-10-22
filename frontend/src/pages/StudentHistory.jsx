@@ -1,23 +1,46 @@
 import React, { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
-import { Briefcase, Calendar, Building2, Clock } from 'lucide-react';
+import { Briefcase, Calendar, Building2, Clock, Video } from 'lucide-react';
 import Toast from '../components/Toast';
 
 const StudentHistory = () => {
   const { apiCall } = useAuth();
+  const navigate = useNavigate();
   const [applications, setApplications] = useState([]);
+  const [interviewMap, setInterviewMap] = useState({});
   const [loading, setLoading] = useState(true);
   const [toast, setToast] = useState(null);
 
   useEffect(() => {
-    const fetchHistory = async () => {
+    const fetchHistoryAndInterviews = async () => {
       try {
-        const res = await apiCall('/api/student/applications');
-        const data = await res.json();
-        if (res.ok) {
-          setApplications(data);
+        const [appRes, intvRes] = await Promise.all([
+          apiCall('/api/student/applications'),
+          apiCall('/api/interviews/active'),
+        ]);
+
+        const appData = await appRes.json();
+        const intvData = await intvRes.json();
+
+        if (appRes.ok) {
+          setApplications(appData);
         } else {
-          setToast({ message: data.message || 'Error loading history', type: 'error' });
+          setToast({ message: appData.message || 'Error loading history', type: 'error' });
+        }
+
+        if (intvRes.ok && intvData.interviews) {
+          const map = {};
+          intvData.interviews.forEach((inv) => {
+            // Handle both populated object and plain ObjectId string
+            const appId = typeof inv.application === 'object' && inv.application?._id
+              ? inv.application._id.toString()
+              : inv.application?.toString();
+            if (appId) {
+              map[appId] = inv;
+            }
+          });
+          setInterviewMap(map);
         }
       } catch (err) {
         setToast({ message: err.message, type: 'error' });
@@ -25,7 +48,7 @@ const StudentHistory = () => {
         setLoading(false);
       }
     };
-    fetchHistory();
+    fetchHistoryAndInterviews();
   }, []);
 
   const getStatusBadge = (status) => {
@@ -120,9 +143,27 @@ const StudentHistory = () => {
                 </div>
               </div>
 
-              {/* Status Badge */}
+              {/* Status Badge & Actions */}
               <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-end', gap: '0.5rem' }}>
                 {getStatusBadge(app.status)}
+                {interviewMap[app._id] && (
+                  <button
+                    onClick={() => navigate(`/interview/${interviewMap[app._id].roomId}`)}
+                    className="btn btn-sm"
+                    style={{
+                      background: 'linear-gradient(135deg, var(--accent-gold), #8A6D2F)',
+                      color: '#FFF',
+                      border: 'none',
+                      display: 'flex',
+                      alignItems: 'center',
+                      gap: '0.35rem',
+                      fontWeight: 600,
+                      boxShadow: '0 2px 6px rgba(197, 160, 89, 0.3)',
+                    }}
+                  >
+                    <Video size={13} /> Join Interview
+                  </button>
+                )}
               </div>
             </div>
           ))}

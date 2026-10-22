@@ -2,6 +2,7 @@ import React, { useState, useEffect, useRef } from 'react';
 import { useAuth } from '../context/AuthContext';
 import { UploadCloud, FileText, CheckCircle2 } from 'lucide-react';
 import Toast from '../components/Toast';
+import { getUploadUrl } from '../config/api';
 
 const StudentProfile = () => {
   const { apiCall } = useAuth();
@@ -321,7 +322,7 @@ const StudentProfile = () => {
                 <div style={{ flex: 1 }}>
                   <div style={{ fontWeight: 600, color: 'var(--text-main)' }}>Resume uploaded</div>
                   <a
-                    href={`http://localhost:5001/uploads/${currentResume}`}
+                    href={getUploadUrl(currentResume)}
                     target="_blank"
                     rel="noopener noreferrer"
                     style={{ color: 'var(--color-success)', fontSize: '0.85rem', display: 'flex', alignItems: 'center', gap: '0.25rem' }}

@@ -27,6 +27,7 @@ import ViewApplicants from './pages/ViewApplicants';
 import StudentDashboard from './pages/StudentDashboard';
 import StudentProfile from './pages/StudentProfile';
 import StudentHistory from './pages/StudentHistory';
+import InterviewRoom from './pages/InterviewRoom';
 import NotFound from './pages/NotFound';
 
 /**
@@ -178,6 +179,16 @@ const AppRoutes = () => {
             element={
               <ProtectedRoute allowedRoles={['student']}>
                 <StudentHistory />
+              </ProtectedRoute>
+            }
+          />
+
+          {/* ─── Live Collaborative Interview Suite (student, company, admin) ─── */}
+          <Route
+            path="/interview/:roomId"
+            element={
+              <ProtectedRoute allowedRoles={['student', 'company', 'admin']}>
+                <InterviewRoom />
               </ProtectedRoute>
             }
           />

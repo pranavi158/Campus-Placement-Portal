@@ -5,6 +5,7 @@ const validate = require('../middleware/validate');
 const Company = require('../models/Company');
 const Drive = require('../models/Drive');
 const Application = require('../models/Application');
+const { addStatusChangeJob } = require('../queues/emailQueue');
 
 const router = express.Router();
 
@@ -288,12 +289,26 @@ router.put('/applications/:id/status', async (req, res) => {
     await application.save();
 
     // Placed Flow: If status is Selected, mark student as placed with CTC
+    const Student = require('../models/Student');
     if (status === 'Selected') {
-      const Student = require('../models/Student');
       await Student.findByIdAndUpdate(application.student, {
         isPlaced: true,
         placedCTC: application.drive.ctc || 0
       });
+    }
+
+    // Populate student and company details for email notification dispatch
+    const student = await Student.findById(application.student).select('name email');
+    const company = await Company.findById(req.user.id).select('name');
+
+    if (student && company) {
+      addStatusChangeJob({
+        studentEmail: student.email,
+        studentName: student.name,
+        driveTitle: application.drive.title,
+        companyName: company.name,
+        status,
+      }).catch((err) => console.error('Error dispatching status change email job:', err));
     }
 
     return res.json({ message: 'Application candidate status updated successfully', application });

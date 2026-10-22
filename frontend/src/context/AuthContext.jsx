@@ -1,4 +1,5 @@
 import React, { createContext, useState, useEffect, useContext } from 'react';
+import { API_BASE_URL } from '../config/api';
 
 const AuthContext = createContext(null);
 
@@ -31,7 +32,7 @@ export const AuthProvider = ({ children }) => {
   const login = async (email, password, role) => {
     setLoading(true);
     try {
-      const response = await fetch('http://localhost:5001/api/auth/login', {
+      const response = await fetch(`${API_BASE_URL}/api/auth/login`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -65,7 +66,7 @@ export const AuthProvider = ({ children }) => {
    */
   const registerStudent = async (studentData) => {
     try {
-      const response = await fetch('http://localhost:5001/api/auth/register/student', {
+      const response = await fetch(`${API_BASE_URL}/api/auth/register/student`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -91,7 +92,7 @@ export const AuthProvider = ({ children }) => {
    */
   const registerCompany = async (companyData) => {
     try {
-      const response = await fetch('http://localhost:5001/api/auth/register/company', {
+      const response = await fetch(`${API_BASE_URL}/api/auth/register/company`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -138,7 +139,7 @@ export const AuthProvider = ({ children }) => {
       headers['Content-Type'] = 'application/json';
     }
 
-    const response = await fetch(`http://localhost:5001${endpoint}`, {
+    const response = await fetch(`${API_BASE_URL}${endpoint}`, {
       ...options,
       headers,
     });

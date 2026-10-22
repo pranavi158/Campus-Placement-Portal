@@ -44,3 +44,7 @@ backend/uploads/*
 # Logs
 logs/
 *.log
+
+# Redis
+*.rdb
+dump.rdb

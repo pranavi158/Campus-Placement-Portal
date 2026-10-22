@@ -1,8 +1,9 @@
 import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
-import { ArrowLeft, User, GraduationCap, FileText, Calendar, CheckCircle, Star, X } from 'lucide-react';
+import { ArrowLeft, GraduationCap, FileText, Calendar, CheckCircle, Star, X, Video } from 'lucide-react';
 import Toast from '../components/Toast';
+import { getUploadUrl } from '../config/api';
 
 const ViewApplicants = () => {
   const { apiCall } = useAuth();
@@ -13,6 +14,23 @@ const ViewApplicants = () => {
   const [applications, setApplications] = useState([]);
   const [loading, setLoading] = useState(true);
   const [toast, setToast] = useState(null);
+
+  const handleStartInterview = async (appId) => {
+    try {
+      const res = await apiCall('/api/interviews/create', {
+        method: 'POST',
+        body: JSON.stringify({ applicationId: appId }),
+      });
+      const data = await res.json();
+      if (res.ok && data.roomId) {
+        navigate(`/interview/${data.roomId}`);
+      } else {
+        setToast({ message: data.message || 'Failed to start interview', type: 'error' });
+      }
+    } catch (err) {
+      setToast({ message: err.message, type: 'error' });
+    }
+  };
 
   useEffect(() => {
     const fetchApplicants = async () => {
@@ -183,7 +201,7 @@ const ViewApplicants = () => {
                     <td>
                       {app.student?.resume ? (
                         <a
-                          href={`http://localhost:5001/uploads/${app.student.resume}`}
+                          href={getUploadUrl(app.student.resume)}
                           target="_blank"
                           rel="noopener noreferrer"
                           className="btn btn-secondary btn-sm"
@@ -200,7 +218,26 @@ const ViewApplicants = () => {
                     </td>
                     <td>{getStatusBadge(app.status)}</td>
                     <td style={{ textAlign: 'right' }}>
-                      <div style={{ display: 'inline-flex', gap: '0.4rem', flexWrap: 'wrap', justifyContent: 'flex-end' }}>
+                      <div style={{ display: 'inline-flex', gap: '0.4rem', flexWrap: 'wrap', justifyContent: 'flex-end', alignItems: 'center' }}>
+                        {/* Live Collaborative Interview Button */}
+                        <button
+                          onClick={() => handleStartInterview(app._id)}
+                          className="btn btn-sm"
+                          style={{
+                            background: 'linear-gradient(135deg, var(--accent-gold), #8A6D2F)',
+                            color: '#FFF',
+                            border: 'none',
+                            display: 'flex',
+                            alignItems: 'center',
+                            gap: '0.3rem',
+                            fontWeight: 600,
+                            boxShadow: '0 2px 6px rgba(197, 160, 89, 0.25)',
+                          }}
+                          title="Launch In-App Collaborative Interview Room"
+                        >
+                          <Video size={13} /> Interview
+                        </button>
+
                         {app.status !== 'Shortlisted' && (
                           <button
                             onClick={() => handleStatusChange(app._id, 'Shortlisted')}
